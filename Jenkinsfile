@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod/currencyservice'
+        DOCKER_IMAGE = 'afod2000/currencyservice'
     }
 
     stages {
