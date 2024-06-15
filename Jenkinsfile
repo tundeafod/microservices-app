@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod/loadgenerator'
+        DOCKER_IMAGE = 'afod2000/loadgenerator'
     }
 
     stages {
