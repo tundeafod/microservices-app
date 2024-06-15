@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod/adservice'
+        args '-v /var/run/docker.sock:/var/run/docker.sock'
     }
 
     stages {
