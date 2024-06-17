@@ -60,7 +60,7 @@ pipeline {
                     def deployFile = './deployment-service.yml'
                     
                     sh """
-                    sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${env.IMAGE_TAG}|' ${deployFile}
+                    sed -i 's|image: afod2000/emailservice:.*|image: afod2000/emailservice:${imageTag}|' ${deployFile}
                     """
                 }
             }
