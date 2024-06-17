@@ -1,6 +1,5 @@
-pipeline { 
+pipeline {
     agent any
-
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod2000/cartservice'
