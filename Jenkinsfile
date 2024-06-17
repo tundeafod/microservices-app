@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod2000/adservice'
+        DOCKER_IMAGE = 'afod2000/emailservice'
         GIT_CREDENTIALS = 'git-creds'
     }
 
