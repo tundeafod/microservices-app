@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         REPO_NAME = 'afod2000'
-        DOCKER_IMAGES = ['adservice', 'cartservice', 'checkoutservice', 'currencyservice', 'emailservice', 'frontend', 'loadgenerator', 'paymentservice', 'productcatalogservice', 'recommendationservice', 'shippingservice']
+        DOCKER_IMAGES = ['adservice']
     }
 
     stages {
