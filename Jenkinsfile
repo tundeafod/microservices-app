@@ -5,6 +5,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         REPO_NAME = 'afod2000'
         DOCKER_IMAGES = 'adservice'
+        DEPLOYMENT_YAML_PATH = 'main/deployment-service.yml'
     }
 
     stages {
