@@ -4,18 +4,14 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         REPO_NAME = 'afod2000'
-        DOCKER_IMAGES = ['adservice',]
+        DOCKER_IMAGES = ['adservice', 'cartservice', 'checkoutservice', 'currencyservice', 'emailservice', 'frontend', 'loadgenerator', 'paymentservice', 'productcatalogservice', 'recommendationservice', 'shippingservice']
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
                 script {
-                    checkout([$class: 'GitSCM',
-                        branches: [[name: '*/main']],
-                        extensions: [],
-                        userRemoteConfigs: [[url: 'https://github.com/tundeafod/microservices-app.git']]
-                    ])
+                    checkout scm
                 }
             }
         }
@@ -30,7 +26,7 @@ pipeline {
             steps {
                 script {
                     DOCKER_IMAGES.each { imageName ->
-                        withDockerRegistry(credentialsId: DOCKER_HUB_CREDENTIALS, url: '') {
+                        withDockerRegistry(credentialsId: DOCKER_HUB_CREDENTIALS, toolName: 'docker') {
                             def majorVersion = '1'
                             def buildNumber = env.BUILD_NUMBER.toInteger()
                             def formattedBuildNumber = String.format('%02d', buildNumber)
