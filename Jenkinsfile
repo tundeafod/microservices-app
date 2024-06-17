@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod2000/emailservice'
+        DOCKER_IMAGE = 'afod2000/adservice'
     }
 
     stages {
@@ -41,6 +41,21 @@ pipeline {
             }
         }
         
+        stage('Update Kubernetes Manifests') {
+            steps {
+                script {
+                    def majorVersion = '1'
+                    def buildNumber = env.BUILD_NUMBER.toInteger()
+                    def formattedBuildNumber = String.format('%02d', buildNumber)
+                    def imageTag = "${majorVersion}.${formattedBuildNumber}"
+                    
+                    sh """
+                    sed -i 's|image: adijaiswal/emailservice:.*|image: adijaiswal/emailservice:${imageTag}|' deployment-service.yml
+                    """
+                }
+            }
+        }
+
         stage('Clean up disk') {
             steps {
                 script {
