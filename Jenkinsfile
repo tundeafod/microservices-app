@@ -13,7 +13,7 @@ pipeline {
                 script {
                     // Check out the specific branch (main)
                     checkout([$class: 'GitSCM', 
-                        branches: [[name: 'main']], 
+                        branches: [[name: 'emailservice']], 
                         doGenerateSubmoduleConfigurations: false, 
                         extensions: [], 
                         userRemoteConfigs: [[credentialsId: 'git-creds', url: 'https://github.com/tundeafod/microservices-app.git']]
