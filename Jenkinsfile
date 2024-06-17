@@ -3,59 +3,60 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod2000/adservice'
+        REPO_NAME = 'afod2000'
+        DOCKER_IMAGES = ['adservice',]
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Build & Tag Docker Image') {
+        stage('Checkout SCM') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
-                        def majorVersion = '1'
-                        def buildNumber = env.BUILD_NUMBER.toInteger()
-                        def formattedBuildNumber = String.format('%02d', buildNumber)
-                        def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker build -t ${DOCKER_IMAGE}:${imageTag} ."
-                    }
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        extensions: [],
+                        userRemoteConfigs: [[url: 'https://github.com/tundeafod/microservices-app.git']]
+                    ])
                 }
             }
         }
 
-        stage('Push') {
+        stage('Set Permissions') {
             steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
-                        def majorVersion = '1'
-                        def buildNumber = env.BUILD_NUMBER.toInteger()
-                        def formattedBuildNumber = String.format('%02d', buildNumber)
-                        def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker push ${DOCKER_IMAGE}:${imageTag}"
-                    }
-                }
+                sh 'chmod 644 deployment-service.yml'
             }
         }
-        
-        stage('Clean up disk') {
+
+        stage('Build, Push, Update YAML for Each Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
-                        def majorVersion = '1'
-                        def buildNumber = env.BUILD_NUMBER.toInteger()
-                        def formattedBuildNumber = String.format('%02d', buildNumber)
-                        def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker rmi ${DOCKER_IMAGE}:${imageTag}"
+                    DOCKER_IMAGES.each { imageName ->
+                        withDockerRegistry(credentialsId: DOCKER_HUB_CREDENTIALS, url: '') {
+                            def majorVersion = '1'
+                            def buildNumber = env.BUILD_NUMBER.toInteger()
+                            def formattedBuildNumber = String.format('%02d', buildNumber)
+                            def imageTag = "${majorVersion}.${formattedBuildNumber}"
+                            def fullImageName = "${REPO_NAME}/${imageName}:${imageTag}"
+
+                            // Build Docker Image
+                            sh "docker build -t ${fullImageName} ."
+
+                            // Push Docker Image
+                            sh "docker push ${fullImageName}"
+
+                            // Remove Docker Image from local storage
+                            sh "docker rmi ${fullImageName}"
+
+                            // Update deployment-service.yml
+                            sh """
+                                sed -i 's#${REPO_NAME}/${imageName}:.*#${fullImageName}#' deployment-service.yml
+                            """
+                        }
                     }
                 }
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
