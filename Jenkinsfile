@@ -13,7 +13,7 @@ pipeline {
                 script {
                     // Check out the specific branch (main)
                     checkout([$class: 'GitSCM', 
-                        branches: [[name: 'emailservice']], 
+                        branches: [[name: 'main']], 
                         doGenerateSubmoduleConfigurations: false, 
                         extensions: [], 
                         userRemoteConfigs: [[credentialsId: 'git-creds', url: 'https://github.com/tundeafod/microservices-app.git']]
@@ -57,7 +57,7 @@ pipeline {
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
                     def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                    def deployFile = './deployment-service.yml'
+                    def deployFile = 'home/deployment-service.yml'
                     
                     sh """
                     sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${env.IMAGE_TAG}|' ${deployFile}
