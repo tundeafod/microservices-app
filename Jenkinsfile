@@ -19,7 +19,7 @@ pipeline {
 
         stage('Set Permissions') {
             steps {
-                sh 'chmod 644 deployment-service.yml'
+                sh 'chmod 644 ${DEPLOYMENT_YAML_PATH}'
             }
         }
 
@@ -45,7 +45,7 @@ pipeline {
 
                             // Update deployment-service.yml
                             sh """
-                                sed -i 's#${REPO_NAME}/${imageName}:.*#${fullImageName}#' deployment-service.yml
+                                sed -i 's#${REPO_NAME}/${imageName}:.*#${fullImageName}#' ${DEPLOYMENT_YAML_PATH}
                             """
                         }
                     }
