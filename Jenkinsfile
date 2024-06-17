@@ -4,12 +4,21 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod2000/adservice'
+        GIT_CREDENTIALS = 'git-creds'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                script {
+                    // Check out the specific branch (main)
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: 'main']], 
+                        doGenerateSubmoduleConfigurations: false, 
+                        extensions: [], 
+                        userRemoteConfigs: [[credentialsId: 'git-creds', url: 'https://github.com/tundeafod/microservices-app.git']]
+                    ])
+                }
             }
         }
 
