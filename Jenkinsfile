@@ -48,10 +48,10 @@ pipeline {
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
                     def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                    def deploymentFile = './deployment-service.yml'
-        
+                    def manifestFile = './deployment-service.yml'
+                    
                     sh """
-                    sed -i 's|image: adijaiswal/emailservice:.*|image: adijaiswal/emailservice:${imageTag}|' deployment-service.yml
+                    sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${env.IMAGE_TAG}|' ${manifestFile}
                     """
                 }
             }
