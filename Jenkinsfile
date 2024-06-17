@@ -53,10 +53,14 @@ pipeline {
         stage('Update Kubernetes Manifests') {
             steps {
                 script {
-                    def manifestFile = './deployment-service.yml'
+                    def majorVersion = '1'
+                    def buildNumber = env.BUILD_NUMBER.toInteger()
+                    def formattedBuildNumber = String.format('%02d', buildNumber)
+                    def imageTag = "${majorVersion}.${formattedBuildNumber}"
+                    def deployFile = './deployment-service.yml'
                     
                     sh """
-                    sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${env.IMAGE_TAG}|' ${manifestFile}
+                    sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${env.IMAGE_TAG}|' ${deployFile}
                     """
                 }
             }
