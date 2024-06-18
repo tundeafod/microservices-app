@@ -1,5 +1,4 @@
-pipeline { 
-    
+pipeline {
     agent any
 
     environment {
@@ -20,27 +19,22 @@ pipeline {
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
-                        def majorVersion = '1'
-                        def buildNumber = env.BUILD_NUMBER.toInteger()
-                        def formattedBuildNumber = String.format('%02d', buildNumber)
-                        def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker build -t ${DOCKER_IMAGE}:${imageTag} ."
-                        env.NEW_DOCKER_IMAGE = "${DOCKER_IMAGE}:${imageTag}"
-                    }
+                    def majorVersion = '1'
+                    def buildNumber = env.BUILD_NUMBER.toInteger()
+                    def formattedBuildNumber = String.format('%02d', buildNumber)
+                    def imageTag = "${majorVersion}.${formattedBuildNumber}"
+                    env.NEW_DOCKER_IMAGE = "${DOCKER_IMAGE}:${imageTag}"
+                    
+                    sh "docker build -t ${env.NEW_DOCKER_IMAGE} ."
                 }
             }
         }
 
-        stage('Push') {
+        stage('Push Docker Image') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
-                        def majorVersion = '1'
-                        def buildNumber = env.BUILD_NUMBER.toInteger()
-                        def formattedBuildNumber = String.format('%02d', buildNumber)
-                        def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker push ${DOCKER_IMAGE}:${imageTag}"
+                        sh "docker push ${env.NEW_DOCKER_IMAGE}"
                     }
                 }
             }
@@ -49,13 +43,7 @@ pipeline {
         stage('Clean up disk') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
-                        def majorVersion = '1'
-                        def buildNumber = env.BUILD_NUMBER.toInteger()
-                        def formattedBuildNumber = String.format('%02d', buildNumber)
-                        def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker rmi ${DOCKER_IMAGE}:${imageTag}"
-                    }
+                    sh "docker rmi ${env.NEW_DOCKER_IMAGE}"
                 }
             }
         }
@@ -80,11 +68,12 @@ pipeline {
                         git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                         '''
+                    }
                 }
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
