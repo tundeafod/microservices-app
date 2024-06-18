@@ -49,23 +49,22 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: GITHUB_TOKEN_ID, variable: 'GITHUB_TOKEN')]) {
+                        sh '''
                         // Clone the main branch of your repository using token
-                        sh "git clone https://${GITHUB_TOKEN}@github.com/tundeafod/microservices-app.git -b main"
+                        git clone -b main https://${GITHUB_TOKEN}@github.com/tundeafod/microservices-app.git
 
-                        // Update the image in deployment-service.yml
-                        def deploymentFile = readFile 'your-repo/deployment-service.yml'
-                        def updatedDeploymentFile = deploymentFile.replaceAll(/image: .*/, "image: ${env.NEW_DOCKER_IMAGE}")
-                        writeFile file: 'your-repo/deployment-service.yml', text: updatedDeploymentFile
+                        # Update the image in deployment-service.yml
+                        cd microservices-app
+                        sed -i 's|image: .*|image: '${env.NEW_DOCKER_IMAGE}'|' deployment-service.yml
 
                         // Commit and push the changes
-                        dir('your-repo') {
-                            sh '''
-                            git config user.email "jenkins@example.com"
-                            git config user.name "Jenkins"
-                            git add deployment-service.yml
-                            git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
-                            git push https://${GITHUB_TOKEN}@github.com/tundeafod/microservices-app.git main
-                            '''
+                       # Commit and push the changes
+                        git config user.email "jenkins@example.com"
+                        git config user.name "Jenkins"
+                        git add deployment-service.yml
+                        git commit -m "Updated deployment with new Docker image: ${env.NEW_DOCKER_IMAGE}"
+                        git push origin main
+                        '''
                         }
                     }
                 }
