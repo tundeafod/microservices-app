@@ -4,6 +4,8 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod2000/adservice'
+        GIT_PASSWORD = 'git-password'
+        GIT_USERNAME = 'git-username'
         GITHUB_CREDENTIALS_ID = 'git-creds'
     }
 
@@ -69,13 +71,15 @@ pipeline {
                     writeFile file: 'deployment-service.yml', text: updatedDeploymentFile
 
                     // Commit and push the changes
-                    sh '''
-                    git config user.email "jenkins@example.com"
-                    git config user.name "Jenkins"
-                    git add deployment-service.yml
-                    git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
-                    git push origin main
-                    '''
+                    withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        sh '''
+                        git config user.email "jenkins@example.com"
+                        git config user.name "Jenkins"
+                        git add deployment-service.yml
+                        git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
+                        '''
+                    }
                 }
             }
         }
