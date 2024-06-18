@@ -77,7 +77,7 @@ pipeline {
                         git config user.name "Jenkins"
                         git add deployment-service.yml
                         git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/your-repo.git main
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                         '''
                 }
             }
