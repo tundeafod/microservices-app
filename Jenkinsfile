@@ -45,6 +45,33 @@ pipeline {
             }
         }
 
+        stage('Update Kubernetes Deployment') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: GITHUB_TOKEN_ID, variable: 'GITHUB_TOKEN')]) {
+                        // Clone the main branch of your repository using token
+                        sh "git clone https://${GITHUB_TOKEN}@github.com/tundeafod/microservices-app.git -b main"
+
+                        // Update the image in deployment-service.yml
+                        def deploymentFile = readFile 'your-repo/deployment-service.yml'
+                        def updatedDeploymentFile = deploymentFile.replaceAll(/image: .*/, "image: ${env.NEW_DOCKER_IMAGE}")
+                        writeFile file: 'your-repo/deployment-service.yml', text: updatedDeploymentFile
+
+                        // Commit and push the changes
+                        dir('your-repo') {
+                            sh '''
+                            git config user.email "jenkins@example.com"
+                            git config user.name "Jenkins"
+                            git add deployment-service.yml
+                            git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
+                            git push https://${GITHUB_TOKEN}@github.com/tundeafod/microservices-app.git main
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Clean up disk') {
             steps {
                 script {
@@ -54,31 +81,6 @@ pipeline {
                         def formattedBuildNumber = String.format('%02d', buildNumber)
                         def imageTag = "${majorVersion}.${formattedBuildNumber}"
                         sh "docker rmi ${DOCKER_IMAGE}:${imageTag}"
-                    }
-                }
-            }
-        }
-
-        stage('Update Kubernetes Deployment') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: GITHUB_TOKEN_ID, variable: 'GITHUB_TOKEN')]) {
-                        // Clone the main branch of your repository using token
-                        sh "git clone https://${GITHUB_TOKEN}@github.com/tundeafod/microservices-app.git -b main"
-
-                        // Update the image in deployment-service.yml
-                        def deploymentFile = readFile 'deployment-service.yml'
-                        def updatedDeploymentFile = deploymentFile.replaceAll(/image: .*/, "image: ${env.NEW_DOCKER_IMAGE}")
-                        writeFile file: 'deployment-service.yml', text: updatedDeploymentFile
-
-                        // Commit and push the changes
-                        sh '''
-                        git config user.email "jenkins@example.com"
-                        git config user.name "Jenkins"
-                        git add deployment-service.yml
-                        git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
-                        git push https://${GITHUB_TOKEN}@github.com/tundeafod/microservices-app.git main
-                        '''
                     }
                 }
             }
