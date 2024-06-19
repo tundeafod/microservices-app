@@ -55,10 +55,15 @@ pipeline {
                     // Clone the main branch of your repository
                     git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
+                    // Print the variables for debugging
+                    echo "DOCKER_IMAGE: ${DOCKER_IMAGE}"
+                    echo "NEW_DOCKER_IMAGE: ${NEW_DOCKER_IMAGE}"
+
                     // Use sed to update the deployment-service.yml file
                     sh """
                         echo "Updating deployment-service.yml with new image: ${NEW_DOCKER_IMAGE}"
-                        sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${NEW_DOCKER_IMAGE}|' deployment-service.yml
+                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${NEW_DOCKER_IMAGE}|' deployment-service.yml
+                        echo "Updated deployment-service.yml:"
                         cat deployment-service.yml
                     """
 
