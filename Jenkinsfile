@@ -54,7 +54,7 @@ pipeline {
                     git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
                     // Use sed to update the deployment-service.yml file
-                    sh "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
+                    sh "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${NEW_DOCKER_IMAGE}|' deployment-service.yml"
 
                     // Commit and push the changes
                     withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
@@ -63,6 +63,7 @@ pipeline {
                             git config user.name "Jenkins"
                             git add deployment-service.yml
                             git commit -m "Updated deployment with new Docker image:${NEW_DOCKER_IMAGE}"
+                            git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                         """
                     }
