@@ -200,7 +200,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: afod2000/frontend:latest
+          image: afod2000/frontend:1.02
           ports:
           - containerPort: 8080
           readinessProbe:
