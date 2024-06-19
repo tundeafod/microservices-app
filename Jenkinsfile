@@ -52,7 +52,7 @@ pipeline {
 
                     // Use sed to update the deployment-service.yml file
                     sh """
-                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${NEW_DOCKER_IMAGE}|' deployment-service.yml
+                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${NEW_DOCKER_IMAGE}|' /home/deployment-service.yaml
                     """
 
                     // Commit and push the changes
