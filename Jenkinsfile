@@ -41,14 +41,6 @@ pipeline {
             }
         }
 
-        stage('Clean up disk') {
-            steps {
-                script {
-                    sh "docker rmi ${NEW_DOCKER_IMAGE}"
-                }
-            }
-        }
-
         stage('Update Kubernetes Deployment') {
             steps {
                 script {
@@ -69,6 +61,14 @@ pipeline {
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                         """
                     }
+                }
+            }
+        }
+
+        stage('Clean up disk') {
+            steps {
+                script {
+                    sh "docker rmi ${NEW_DOCKER_IMAGE}"
                 }
             }
         }
