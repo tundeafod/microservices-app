@@ -48,6 +48,11 @@ pipeline {
                     git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
                     // Use sed to update the deployment-service.yml file with the new Docker image tag
+                    def majorVersion = '1'
+                    def buildNumber = env.BUILD_NUMBER.toInteger()
+                    def formattedBuildNumber = String.format('%02d', buildNumber)
+                    def imageTag = "${majorVersion}.${formattedBuildNumber}"
+                    env.NEW_DOCKER_IMAGE = "${DOCKER_IMAGE}:${imageTag}"
                     sh "sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
                     
 
