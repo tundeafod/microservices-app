@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'henrykingiv/adservice'
+        DOCKER_IMAGE = 'tundeafod/adservice'
         TARGET_BRANCH = 'main'
-        REPO_URL = 'https://github.com/henrykingiv/microservices-app.git'
+        REPO_URL = 'https://github.com/tundeafod/microservices-app.git'
         MANIFEST_FILE_PATH = '/home/deployment-service.yaml'
         COMMIT_MESSAGE = 'Update manifest file'
         CREDENTIALS_ID = 'git-creds'
@@ -90,7 +90,7 @@ pipeline {
         
                     // Push the changes
                     withCredentials([usernamePassword(credentialsId: 'git-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/henrykingiv/microservices-app.git HEAD:main"
+                        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main"
                     }
                 }
             }
