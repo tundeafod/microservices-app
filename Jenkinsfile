@@ -4,8 +4,8 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod2000/checkoutservice'
-        GIT_PASSWORD = credentials('git-password') // Use Jenkins credentials binding
-        GIT_USERNAME = credentials('git-username') // Use Jenkins credentials binding
+        GIT_PASSWORD = 'git-password'
+        GIT_USERNAME = 'git-username'
         GITHUB_CREDENTIALS_ID = 'git-creds'
     }
 
@@ -22,10 +22,8 @@ pipeline {
                     def majorVersion = '1'
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
-                    env.IMAGE_TAG = "${majorVersion}.${formattedBuildNumber}"
-                    env.NEW_DOCKER_IMAGE = "${DOCKER_IMAGE}:${IMAGE_TAG}"
-                    
-                    // Build and tag Docker image
+                    def imageTag = "${majorVersion}.${formattedBuildNumber}"
+                    env.NEW_DOCKER_IMAGE = "${DOCKER_IMAGE}:${imageTag}"
                     withDockerRegistry(credentialsId: DOCKER_HUB_CREDENTIALS, toolName: 'docker') {
                         sh "docker build -t ${NEW_DOCKER_IMAGE} ."
                     }
@@ -33,13 +31,20 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push') {
             steps {
                 script {
-                    // Push Docker image to Docker registry
                     withDockerRegistry(credentialsId: DOCKER_HUB_CREDENTIALS, toolName: 'docker') {
                         sh "docker push ${NEW_DOCKER_IMAGE}"
                     }
+                }
+            }
+        }
+
+        stage('Clean up disk') {
+            steps {
+                script {
+                    sh "docker rmi ${NEW_DOCKER_IMAGE}"
                 }
             }
         }
@@ -51,9 +56,7 @@ pipeline {
                     git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
                     // Use sed to update the deployment-service.yml file
-                    sh """
-                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${NEW_DOCKER_IMAGE}|' /home/deployment-service.yaml
-                    """
+                    sh "sed -i 's|image: .*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
 
                     // Commit and push the changes
                     withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
