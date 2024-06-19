@@ -24,7 +24,10 @@ pipeline {
                         def buildNumber = env.BUILD_NUMBER.toInteger()
                         def formattedBuildNumber = String.format('%02d', buildNumber)
                         def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker build -t ${DOCKER_IMAGE}:${imageTag} ."
+                        def NEW_DOCKER_IMAGE = "${DOCKER_IMAGE}:${imageTag}"
+                        sh "docker build -t ${NEW_DOCKER_IMAGE} ."
+                        // Export the NEW_DOCKER_IMAGE variable for later stages
+                        env.NEW_DOCKER_IMAGE = NEW_DOCKER_IMAGE
                     }
                 }
             }
@@ -34,53 +37,44 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
-                        def majorVersion = '1'
-                        def buildNumber = env.BUILD_NUMBER.toInteger()
-                        def formattedBuildNumber = String.format('%02d', buildNumber)
-                        def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker push ${DOCKER_IMAGE}:${imageTag}"
+                        sh "docker push ${env.NEW_DOCKER_IMAGE}"
                     }
                 }
             }
         }
-        
-        stage('Update deployment-service.yml and Git Operations') {
+
+        stage('Update Kubernetes Deployment') {
             steps {
                 script {
-                    def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                    def dockerImageName = "${DOCKER_IMAGE}:${imageTag}"
-                    
-                    // Read deployment-service.yml
-                    def yamlFile = readFile('deployment-service.yml')
-                    
-                    // Update the image line with the new Docker image name
-                    yamlFile = yamlFile.replaceAll(/image: afod2000\/productcatalogservice:\d+\.\d+/, "image: ${dockerImageName}")
-                    
-                    // Write the updated yaml back to file
-                    writeFile(file: 'deployment-service.yml', text: yamlFile)
-                    
-                    // Stage the updated deployment-service.yml for commit
-                    sh "git add deployment-service.yml"
-                    
-                    // Check if there are changes to commit
-                    def changes = sh(returnStdout: true, script: 'git status --porcelain deployment-service.yml')
-                    
-                    // Commit the changes if there are any
-                    if (changes.trim() != '') {
-                        sh "git config user.name 'Jenkins'"
-                        sh "git config user.email 'jenkins@example.com'"
-                        sh "git commit -m 'Update deployment-service.yml with new Docker image ${dockerImageName}'"
-                        
-                        // Push the changes back to the repository
-                        sh "git push origin main"
-                    } else {
-                        echo "No changes to commit."
+                    // Clone the main branch of your repository
+                    git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
+
+                    // Use sed to update the deployment-service.yml file
+                    sh "sed -i 's|image: .*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
+
+                    // Commit and push the changes
+                    withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        sh """
+                            git config user.email "jenkins@example.com"
+                            git config user.name "Jenkins"
+                            git add deployment-service.yml
+                            git commit -m "Updated deployment with new Docker image: ${env.NEW_DOCKER_IMAGE}"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
+                        """
                     }
+                }
+            }
+        }
+
+        stage('Clean up disk') {
+            steps {
+                script {
+                    sh "docker rmi ${env.NEW_DOCKER_IMAGE}"
                 }
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
