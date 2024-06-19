@@ -465,7 +465,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/loadgenerator:latest
+        image: afod2000/loadgenerator:1.02
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"
