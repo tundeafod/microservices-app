@@ -14,18 +14,18 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                script {
+        //stage('Checkout') {
+            //steps {
+                //script {
                     // Explicitly checkout the main repository
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "*/${env.TARGET_BRANCH}"]],
-                        userRemoteConfigs: [[url: env.REPO_URL, credentialsId: env.CREDENTIALS_ID]]
-                    ])
-                }
-            }
-        }
+        //             checkout([
+        //                 $class: 'GitSCM',
+        //                 branches: [[name: "*/${env.TARGET_BRANCH}"]],
+        //                 userRemoteConfigs: [[url: env.REPO_URL, credentialsId: env.CREDENTIALS_ID]]
+        //             ])
+        //         }
+        //     }
+        // }
 
         stage('Build & Tag Docker Image') {
             steps {
