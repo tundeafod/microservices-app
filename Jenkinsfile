@@ -44,7 +44,7 @@ pipeline {
             }
         }
         
-        stage('Update deployment-service.yml') {
+        stage('Update deployment-service.yml and Git Operations') {
             steps {
                 script {
                     def imageTag = "${majorVersion}.${formattedBuildNumber}"
@@ -62,11 +62,20 @@ pipeline {
                     // Stage the updated deployment-service.yml for commit
                     sh "git add deployment-service.yml"
                     
-                    // Commit the changes
-                    sh "git commit -m 'Update deployment-service.yml with new Docker image ${dockerImageName}'"
+                    // Check if there are changes to commit
+                    def changes = sh(returnStdout: true, script: 'git status --porcelain deployment-service.yml')
                     
-                    // Push the changes back to the repository
-                    sh "git push origin main"
+                    // Commit the changes if there are any
+                    if (changes.trim() != '') {
+                        sh "git config user.name 'Jenkins'"
+                        sh "git config user.email 'jenkins@example.com'"
+                        sh "git commit -m 'Update deployment-service.yml with new Docker image ${dockerImageName}'"
+                        
+                        // Push the changes back to the repository
+                        sh "git push origin main"
+                    } else {
+                        echo "No changes to commit."
+                    }
                 }
             }
         }
