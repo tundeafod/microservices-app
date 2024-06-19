@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'tundeafod/adservice'
+        DOCKER_IMAGE = 'afod2000/adservice'
         TARGET_BRANCH = 'main'
         REPO_URL = 'https://github.com/tundeafod/microservices-app.git'
         MANIFEST_FILE_PATH = '/home/deployment-service.yaml'
