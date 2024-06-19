@@ -56,10 +56,11 @@ pipeline {
                     git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
                     // Use sed to update the deployment-service.yml file
-                    sh "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${NEW_DOCKER_IMAGE}|' deployment-service.yml"
-
-                    // Verify the change
-                    sh "cat deployment-service.yml | grep '${NEW_DOCKER_IMAGE}' || echo 'No changes detected'"
+                    sh """
+                        echo "Updating deployment-service.yml with new image: ${NEW_DOCKER_IMAGE}"
+                        sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${NEW_DOCKER_IMAGE}|' deployment-service.yml
+                        cat deployment-service.yml
+                    """
 
                     // Commit and push the changes
                     withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
