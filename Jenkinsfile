@@ -89,6 +89,7 @@ pipeline {
                     writeFile file: 'deployment-service.yml', text: updatedDeploymentFile
 
                     // Commit and push the changes
+                    withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     sh '''
                     git config user.email "jenkins@example.com"
                     git config user.name "Jenkins"
