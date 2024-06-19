@@ -54,13 +54,15 @@ pipeline {
 
                     // Commit and push the changes
                     withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh """""
+                        sh """
                             git config user.email "jenkins@example.com"
                             git config user.name "Jenkins"
                             git add deployment-service.yml
                             git commit -m "Updated deployment with new Docker image: ${env.NEW_DOCKER_IMAGE}"
-                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main
-                        """""
+                        """
+                        withCredentials([gitUsernamePassword(credentialsId: 'git-creds', gitToolName: 'Default')]) {
+                            sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main"
+                        }
                     }
                 }
             }
