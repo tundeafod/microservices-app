@@ -53,11 +53,11 @@ pipeline {
             steps {
                 script {
                     // Clone the main branch of your repository
-                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/tundeafod/microservices-app.git', credentialsId: GITHUB_CREDENTIALS_ID]]])
+                    git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
                     // Print the variables for debugging
                     echo "DOCKER_IMAGE: ${DOCKER_IMAGE}"
-                    echo "NEW_DOCKER_IMAGE: ${env.NEW_DOCKER_IMAGE}"
+                    echo "NEW_DOCKER_IMAGE: ${NEW_DOCKER_IMAGE}"
 
                     // Print the file contents before updating
                     sh """
@@ -67,8 +67,8 @@ pipeline {
 
                     // Use sed to update the deployment-service.yml file
                     sh """
-                        echo "Updating deployment-service.yml with new image: ${env.NEW_DOCKER_IMAGE}"
-                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml || echo "sed command failed"
+                        echo "Updating deployment-service.yml with new image: ${NEW_DOCKER_IMAGE}"
+                        sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${NEW_DOCKER_IMAGE}|' deployment-service.yml || echo "sed command failed"
                         echo "Updated deployment-service.yml:"
                         cat deployment-service.yml
                     """
@@ -80,8 +80,8 @@ pipeline {
                             git config user.name "Jenkins"
                             git add deployment-service.yml
                             git status
-                            git commit -m "Updated deployment with new Docker image: ${env.NEW_DOCKER_IMAGE}" || echo "Nothing to commit"
-                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main
+                            git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}" || echo "Nothing to commit"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                         """
                     }
                 }
