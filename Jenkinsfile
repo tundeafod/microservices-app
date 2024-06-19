@@ -64,7 +64,6 @@ pipeline {
                         echo "Updating deployment-service.yml with new image: ${NEW_DOCKER_IMAGE}"
                         sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${NEW_DOCKER_IMAGE}|' deployment-service.yml
                         echo "Updated deployment-service.yml:"
-                        cat deployment-service.yml
                     """
 
                     // Commit and push the changes
