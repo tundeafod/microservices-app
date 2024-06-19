@@ -496,7 +496,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: afod2000/currencyservice:latest
+        image: afod2000/currencyservice:1.02
         ports:
         - name: grpc
           containerPort: 7000
