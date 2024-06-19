@@ -28,7 +28,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/emailservice:latest
+        image: afod2000/emailservice:1.02
         ports:
         - containerPort: 8080
         env:
