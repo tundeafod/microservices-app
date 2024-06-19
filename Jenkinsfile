@@ -6,7 +6,7 @@ pipeline {
         DOCKER_IMAGE = 'afod2000/productcatalogservice'
         TARGET_BRANCH = 'main'
         REPO_URL = 'https://github.com/tundeafod/microservices-app.git'
-        MANIFEST_FILE_PATH = '/home/deployment-service.yaml'
+        MANIFEST_FILE_PATH = '/home/deployment-service.yml'
         COMMIT_MESSAGE = 'Update manifest file'
         CREDENTIALS_ID = 'git-creds'
         GIT_USERNAME = 'git-username'
@@ -64,7 +64,7 @@ pipeline {
         stage('Update Manifest File') {
             steps {
                 script {
-                    def manifestFile = "deployment-service.yaml"
+                    def manifestFile = "deployment-service.yml"
                     def majorVersion = '1'
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
