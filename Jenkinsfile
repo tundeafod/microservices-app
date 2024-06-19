@@ -75,7 +75,8 @@ pipeline {
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
                     def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                    def sedCommand = "sed -i 's|image: \\${env.DOCKER_IMAGE}:.*|image: \\${env.DOCKER_IMAGE}:${imageTag}|' ${env.MANIFEST_FILE_PATH}"
+                    def sedCommand = "sed -i 's|image: ${env.DOCKER_IMAGE}:.*|image: ${env.DOCKER_IMAGE}:${imageTag}|' ${env.MANIFEST_FILE_PATH}"
+
                     
                     // Print the sed command for debugging
                     sh "echo ${sedCommand}"
