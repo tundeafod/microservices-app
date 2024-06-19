@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod2000/checkoutservice'
+        DOCKER_IMAGE = 'afod2000/currencyservice'
         GIT_PASSWORD = 'git-password'
         GIT_USERNAME = 'git-username'
         GITHUB_CREDENTIALS_ID = 'git-creds'
@@ -52,11 +52,12 @@ pipeline {
         stage('Update Kubernetes Deployment') {
             steps {
                 script {
-                    // Clone the main branch of your repository
+                    // Clone the repository
                     git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
-                    // Use sed to update the deployment-service.yml file
-                    sh "sed -i 's|image: .*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
+                    // Use sed to update the deployment-service.yml file with the new Docker image tag
+                    def sedCommand = "sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
+                    sh sedCommand
 
                     // Commit and push the changes
                     withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
@@ -64,7 +65,7 @@ pipeline {
                             git config user.email "jenkins@example.com"
                             git config user.name "Jenkins"
                             git add deployment-service.yml
-                            git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}"
+                            git commit -m "Updated deployment with new Docker image: ${env.NEW_DOCKER_IMAGE}"
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                         """
                     }
