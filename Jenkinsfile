@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod2000/productcatlogservice'
+        DOCKER_IMAGE = 'afod2000/productcatalogservice'
         GIT_PASSWORD = 'git-password'
         GIT_USERNAME = 'git-username'
         GITHUB_CREDENTIALS_ID = 'git-creds'
