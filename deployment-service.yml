@@ -81,7 +81,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: afod2000/checkoutservice:latest
+          image: afod2000/checkoutservice:1.02
           ports:
           - containerPort: 5050
           readinessProbe:
