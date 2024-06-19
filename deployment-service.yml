@@ -548,7 +548,7 @@ spec:
       serviceAccountName: default
       containers:
       - name: server
-        image: afod2000/shippingservice:latest
+        image: afod2000/shippingservice:1.02
         ports:
         - containerPort: 50051
         env:
