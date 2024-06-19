@@ -57,7 +57,7 @@ pipeline {
 
                     // Use sed to update the deployment-service.yml file
                     sh """
-                        sed -i '/kind: Deployment/{N;/metadata:/{{N;/name: adservice/{N;s|image: .*|image: ${env.NEW_DOCKER_IMAGE}|}}}}' deployment-service.yml
+                        "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${DOCKER_IMAGE}:${imageTag}|' deployment-service.yml"
                     """
 
                     // Commit and push the changes
@@ -70,15 +70,6 @@ pipeline {
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                         """
                     }
-                }
-            }
-        }
-
-        stage('Update deployment-service.yml') {
-            steps {
-                script {
-                    def updatedYamlContent = readFile('deployment-service.yml').trim()
-                    writeFile file: 'deployment-service.yml', text: updatedYamlContent
                 }
             }
         }
