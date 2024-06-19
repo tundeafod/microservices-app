@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
-        DOCKER_IMAGE = 'afod2000/productcatalogservice'
+        DOCKER_IMAGE = 'afod2000/productcatlogservice'
         GIT_PASSWORD = 'git-password'
         GIT_USERNAME = 'git-username'
         GITHUB_CREDENTIALS_ID = 'git-creds'
@@ -50,7 +50,7 @@ pipeline {
                     git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
 
                     // Use sed to update the deployment-service.yml file
-                    sh "sed -i 's|image: .*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
+                    sh "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
 
                     // Commit and push the changes
                     withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
