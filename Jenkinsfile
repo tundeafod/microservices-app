@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod2000/currencyservice'
-        GIT_PASSWORD = git-password
+        GIT_PASSWORD = credentials('git-password') // Use Jenkins credentials binding
         GIT_USERNAME = 'git-username'
         GITHUB_CREDENTIALS_ID = 'git-creds'
     }
