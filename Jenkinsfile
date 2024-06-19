@@ -1,4 +1,4 @@
-pipeline { 
+pipeline {
     agent any
 
     environment {
@@ -16,19 +16,26 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                script {
+                    // Explicitly checkout the main repository
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "*/${env.TARGET_BRANCH}"]],
+                        userRemoteConfigs: [[url: env.REPO_URL, credentialsId: env.CREDENTIALS_ID]]
+                    ])
+                }
             }
         }
 
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
+                    withDockerRegistry(credentialsId: env.DOCKER_HUB_CREDENTIALS, toolName: 'docker') {
                         def majorVersion = '1'
                         def buildNumber = env.BUILD_NUMBER.toInteger()
                         def formattedBuildNumber = String.format('%02d', buildNumber)
                         def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker build -t ${DOCKER_IMAGE}:${imageTag} ."
+                        sh "docker build -t ${env.DOCKER_IMAGE}:${imageTag} ."
                     }
                 }
             }
@@ -37,12 +44,12 @@ pipeline {
         stage('Push') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
+                    withDockerRegistry(credentialsId: env.DOCKER_HUB_CREDENTIALS, toolName: 'docker') {
                         def majorVersion = '1'
                         def buildNumber = env.BUILD_NUMBER.toInteger()
                         def formattedBuildNumber = String.format('%02d', buildNumber)
                         def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker push ${DOCKER_IMAGE}:${imageTag}"
+                        sh "docker push ${env.DOCKER_IMAGE}:${imageTag}"
                     }
                 }
             }
@@ -64,12 +71,11 @@ pipeline {
         stage('Update Manifest File') {
             steps {
                 script {
-                    def manifestFile = "deployment-service.yml"
                     def majorVersion = '1'
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
                     def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                    def sedCommand = "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${DOCKER_IMAGE}:${imageTag}|' ${manifestFile}"
+                    def sedCommand = "sed -i 's|image: \\${env.DOCKER_IMAGE}:.*|image: \\${env.DOCKER_IMAGE}:${imageTag}|' ${env.MANIFEST_FILE_PATH}"
                     
                     // Print the sed command for debugging
                     sh "echo ${sedCommand}"
@@ -85,11 +91,11 @@ pipeline {
                     sh 'git config user.email "jenkins@example.com"'
         
                     // Commit the changes
-                    sh "git add ${manifestFile}"
+                    sh "git add ${env.MANIFEST_FILE_PATH}"
                     sh "git commit -m 'Update image tag to ${env.DOCKER_IMAGE}:${imageTag}'"
         
                     // Push the changes
-                    withCredentials([usernamePassword(credentialsId: 'git-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: env.CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh "git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main"
                         sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main"
                     }
@@ -100,12 +106,12 @@ pipeline {
         stage('Clean up disk') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
+                    withDockerRegistry(credentialsId: env.DOCKER_HUB_CREDENTIALS, toolName: 'docker') {
                         def majorVersion = '1'
                         def buildNumber = env.BUILD_NUMBER.toInteger()
                         def formattedBuildNumber = String.format('%02d', buildNumber)
                         def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                        sh "docker rmi ${DOCKER_IMAGE}:${imageTag}"
+                        sh "docker rmi ${env.DOCKER_IMAGE}:${imageTag}"
                     }
                 }
             }
