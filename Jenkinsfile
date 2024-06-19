@@ -72,6 +72,7 @@ pipeline {
                         sh """
                             git config user.email "jenkins@example.com"
                             git config user.name "Jenkins"
+                            git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
                             git add deployment-service.yml
                             git status
                             git commit -m "Updated deployment with new Docker image: ${NEW_DOCKER_IMAGE}" || echo "Nothing to commit"
