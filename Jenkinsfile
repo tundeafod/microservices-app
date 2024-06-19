@@ -81,7 +81,7 @@ pipeline {
                             git add deployment-service.yml
                             git status
                             git commit -m "Updated deployment with new Docker image: ${env.NEW_DOCKER_IMAGE}" || echo "Nothing to commit"
-                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git main
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main
                         """
                     }
                 }
