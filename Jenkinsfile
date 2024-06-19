@@ -4,7 +4,9 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod2000/adservice'
-        GITHUB_CREDENTIALS_ID = 'your-github-credentials-id'
+        GIT_PASSWORD = 'git-password'
+        GIT_USERNAME = 'git-username'
+        GITHUB_CREDENTIALS_ID = 'git-creds'
     }
 
     stages {
