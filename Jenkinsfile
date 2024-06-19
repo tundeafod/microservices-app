@@ -54,7 +54,7 @@ pipeline {
                     checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/tundeafod/microservices-app.git', credentialsId: GITHUB_CREDENTIALS_ID]]])
 
                     // Use sed to update the deployment-service.yml file
-                    sh "sed -i 's|image: .*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
+                    sh "sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
 
                     // Commit and push the changes
                     withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
