@@ -1,10 +1,10 @@
-ipeline {
+pipeline {
     agent any
 
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-creds'
         DOCKER_IMAGE = 'afod2000/loadgenerator'
-        GIT_PASSWORD = 'git-password'
+        GIT_PASSWORD = credentials('git-creds')
         GIT_USERNAME = 'git-username'
         GITHUB_CREDENTIALS_ID = 'git-creds'
     }
@@ -51,7 +51,7 @@ ipeline {
             steps {
                 script {
                     // Clone the main branch of your repository
-                    git branch: 'main', credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/tundeafod/microservices-app.git'
+                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/tundeafod/microservices-app.git', credentialsId: GITHUB_CREDENTIALS_ID]]])
 
                     // Use sed to update the deployment-service.yml file
                     sh "sed -i 's|image: .*|image: ${env.NEW_DOCKER_IMAGE}|' deployment-service.yml"
