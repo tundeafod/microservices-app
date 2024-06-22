@@ -29,7 +29,7 @@ pipeline {
             }
         }
 
-        stage('Push') {
+        stage('Push Docker Image') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-creds', toolName: 'docker') {
@@ -46,11 +46,10 @@ pipeline {
         stage('Checkout Target Branch') {
             steps {
                 script {
-                    // Checkout the target branch
                     checkout([
                         $class: 'GitSCM',
-                        branches: [[name: "*/${env.TARGET_BRANCH}"]],
-                        userRemoteConfigs: [[url: env.REPO_URL, credentialsId: env.CREDENTIALS_ID]]
+                        branches: [[name: "*/${TARGET_BRANCH}"]],
+                        userRemoteConfigs: [[url: REPO_URL, credentialsId: CREDENTIALS_ID]]
                     ])
                 }
             }
@@ -59,33 +58,22 @@ pipeline {
         stage('Update Manifest File') {
             steps {
                 script {
-                    def manifestFile = "deployment-service.yaml"
                     def majorVersion = '1'
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
                     def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                    def sedCommand = "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${DOCKER_IMAGE}:${imageTag}|' ${manifestFile}"
-                    
-                    // Print the sed command for debugging
+                    def sedCommand = "sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${imageTag}|' ${MANIFEST_FILE_PATH}"
+
                     sh "echo ${sedCommand}"
-                    
-                    // Execute the sed command
                     sh sedCommand
-                    
-                    // Check if the file was modified
                     sh "git status"
-                    
-                    // Configure git user
                     sh 'git config user.name "jenkins"'
                     sh 'git config user.email "jenkins@example.com"'
-        
-                    // Commit the changes
-                    sh "git add ${manifestFile}"
-                    sh "git commit -m 'Update image tag to ${env.DOCKER_IMAGE}:${imageTag}'"
-        
-                    // Push the changes
-                    withCredentials([usernamePassword(credentialsId: 'git-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:main"
+                    sh "git add ${MANIFEST_FILE_PATH}"
+                    sh "git commit -m '${COMMIT_MESSAGE} to ${DOCKER_IMAGE}:${imageTag}'"
+
+                    withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:${TARGET_BRANCH}"
                     }
                 }
             }
@@ -94,11 +82,10 @@ pipeline {
         stage('Checkout Production Branch') {
             steps {
                 script {
-                    // Checkout the target branch
                     checkout([
                         $class: 'GitSCM',
-                        branches: [[name: "*/${env.PROD_BRANCH}"]],
-                        userRemoteConfigs: [[url: env.REPO_URL, credentialsId: env.CREDENTIALS_ID]]
+                        branches: [[name: "*/${PROD_BRANCH}"]],
+                        userRemoteConfigs: [[url: REPO_URL, credentialsId: CREDENTIALS_ID]]
                     ])
                 }
             }
@@ -107,33 +94,22 @@ pipeline {
         stage('Update Manifest Prod File') {
             steps {
                 script {
-                    def manifestFile = "deployment-service.yaml"
                     def majorVersion = '1'
                     def buildNumber = env.BUILD_NUMBER.toInteger()
                     def formattedBuildNumber = String.format('%02d', buildNumber)
                     def imageTag = "${majorVersion}.${formattedBuildNumber}"
-                    def sedCommand = "sed -i 's|image: \\${DOCKER_IMAGE}:.*|image: \\${DOCKER_IMAGE}:${imageTag}|' ${manifestFile}"
-                    
-                    // Print the sed command for debugging
+                    def sedCommand = "sed -i 's|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${imageTag}|' ${MANIFEST_FILE_PATH}"
+
                     sh "echo ${sedCommand}"
-                    
-                    // Execute the sed command
                     sh sedCommand
-                    
-                    // Check if the file was modified
                     sh "git status"
-                    
-                    // Configure git user
                     sh 'git config user.name "jenkins"'
                     sh 'git config user.email "jenkins@example.com"'
-        
-                    // Commit the changes
-                    sh "git add ${manifestFile}"
-                    sh "git commit -m 'Update image tag to ${env.DOCKER_IMAGE}:${imageTag}'"
-        
-                    // Push the changes
-                    withCredentials([usernamePassword(credentialsId: 'git-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:production"
+                    sh "git add ${MANIFEST_FILE_PATH}"
+                    sh "git commit -m '${COMMIT_MESSAGE} to ${DOCKER_IMAGE}:${imageTag}'"
+
+                    withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:${PROD_BRANCH}"
                     }
                 }
             }
