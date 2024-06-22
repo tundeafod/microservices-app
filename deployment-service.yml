@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: boutique
+  name: prod-boutique
 
 ---
 apiVersion: apps/v1
@@ -11,7 +11,7 @@ metadata:
   name: currencyservice
   labels:
     app: currencyservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -37,7 +37,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/currencyservice:1.02
+        image: afod2000/currencyservice:1.03
         ports:
         - name: grpc
           containerPort: 7000
@@ -66,7 +66,7 @@ metadata:
   name: currencyservice
   labels:
     app: currencyservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -80,7 +80,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: currencyservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -88,7 +88,7 @@ metadata:
   name: loadgenerator
   labels:
     app: loadgenerator
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -149,7 +149,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/loadgenerator:1.01
+        image: afod2000/loadgenerator:1.03
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"
@@ -167,7 +167,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: loadgenerator
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -175,7 +175,7 @@ metadata:
   name: productcatalogservice
   labels:
     app: productcatalogservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -201,7 +201,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/productcatalogservice:1.01
+        image: afod2000/productcatalogservice:1.03
         ports:
         - containerPort: 3550
         env:
@@ -229,7 +229,7 @@ metadata:
   name: productcatalogservice
   labels:
     app: productcatalogservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -243,7 +243,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: productcatalogservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -251,7 +251,7 @@ metadata:
   name: checkoutservice
   labels:
     app: checkoutservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -276,7 +276,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: afod2000/checkoutservice:2.01
+          image: afod2000/checkoutservice:1.03
           ports:
           - containerPort: 5050
           readinessProbe:
@@ -314,7 +314,7 @@ metadata:
   name: checkoutservice
   labels:
     app: checkoutservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -328,7 +328,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: checkoutservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -336,7 +336,7 @@ metadata:
   name: shippingservice
   labels:
     app: shippingservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -361,7 +361,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/shippingservice:1.01
+        image: afod2000/shippingservice:1.03
         ports:
         - containerPort: 50051
         env:
@@ -390,7 +390,7 @@ metadata:
   name: shippingservice
   labels:
     app: shippingservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -404,7 +404,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: shippingservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -412,7 +412,7 @@ metadata:
   name: cartservice
   labels:
     app: cartservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -438,7 +438,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/cartservice:1.01
+        image: afod2000/cartservice:1.03
         ports:
         - containerPort: 7070
         env:
@@ -467,7 +467,7 @@ metadata:
   name: cartservice
   labels:
     app: cartservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -481,7 +481,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cartservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -489,7 +489,7 @@ metadata:
   name: redis-cart
   labels:
     app: redis-cart
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -544,7 +544,7 @@ metadata:
   name: redis-cart
   labels:
     app: redis-cart
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -560,7 +560,7 @@ metadata:
   name: emailservice
   labels:
     app: emailservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -586,7 +586,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/emailservice:1.01
+        image: afod2000/emailservice:1.03
         ports:
         - containerPort: 8080
         env:
@@ -616,7 +616,7 @@ metadata:
   name: emailservice
   labels:
     app: emailservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -630,7 +630,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: emailservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -638,7 +638,7 @@ metadata:
   name: paymentservice
   labels:
     app: paymentservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -664,7 +664,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/paymentservice:1.01
+        image: afod2000/paymentservice:1.03
         ports:
         - containerPort: 50051
         env:
@@ -692,7 +692,7 @@ metadata:
   name: paymentservice
   labels:
     app: paymentservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -706,7 +706,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: paymentservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -714,7 +714,7 @@ metadata:
   name: frontend
   labels:
     app: frontend
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -741,7 +741,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: afod2000/frontend:1.03
+          image: afod2000/frontend:1.04
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -805,7 +805,7 @@ metadata:
   name: frontend
   labels:
     app: frontend
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -821,7 +821,7 @@ metadata:
   name: frontend-external
   labels:
     app: frontend
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: NodePort
   selector:
@@ -835,7 +835,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: frontend
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -843,7 +843,7 @@ metadata:
   name: recommendationservice
   labels:
     app: recommendationservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -869,7 +869,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: afod2000/recommendationservice:1.01
+          image: afod2000/recommendationservice:1.03
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -903,7 +903,7 @@ metadata:
   name: recommendationservice
   labels:
     app: recommendationservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -917,7 +917,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: recommendationservice
-  namespace: boutique
+  namespace: prod-boutique
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -925,7 +925,7 @@ metadata:
   name: adservice
   labels:
     app: adservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   selector:
     matchLabels:
@@ -951,7 +951,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/adservice:1.01
+        image: afod2000/adservice:1.05
         ports:
         - containerPort: 9555
         env:
@@ -981,7 +981,7 @@ metadata:
   name: adservice
   labels:
     app: adservice
-  namespace: boutique
+  namespace: prod-boutique
 spec:
   type: ClusterIP
   selector:
@@ -995,5 +995,5 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: adservice
-  namespace: boutique
+  namespace: prod-boutique
 # [END gke_release_kubernetes_manifests_microservices_demo]
