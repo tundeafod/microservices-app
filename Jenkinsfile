@@ -7,7 +7,7 @@ pipeline {
         TARGET_BRANCH = 'main'
         PROD_BRANCH = 'production'
         REPO_URL = 'https://github.com/tundeafod/microservices-app.git'
-        MANIFEST_FILE_PATH = 'deployment-service.yaml'
+        MANIFEST_FILE_PATH = 'deployment-service.yml'
         COMMIT_MESSAGE = 'Update manifest file'
         CREDENTIALS_ID = 'git-creds'
         GIT_USERNAME = 'git-username'
