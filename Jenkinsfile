@@ -73,7 +73,6 @@ pipeline {
                     sh "git commit -m '${COMMIT_MESSAGE} to ${DOCKER_IMAGE}:${imageTag}'"
 
                     withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh "git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:${TARGET_BRANCH}"
                         sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git HEAD:${TARGET_BRANCH}"
                     }
                 }
