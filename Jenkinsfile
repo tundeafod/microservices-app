@@ -76,7 +76,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh '''
                         echo "Pushing changes to GitHub"
-                        git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git
+                        git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git"
                         git push origin main
                         '''
                     }
