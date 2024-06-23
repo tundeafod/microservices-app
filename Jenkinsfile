@@ -78,7 +78,6 @@ pipeline {
                         echo "Pushing changes to GitHub"
                         git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/tundeafod/microservices-app.git
                         git pull origin main
-                        git push origin main
                         '''
                     }
                 }
