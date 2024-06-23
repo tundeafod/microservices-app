@@ -951,7 +951,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/adservice:1.05
+        image: afod2000/adservice:1.04
         ports:
         - containerPort: 9555
         env:
