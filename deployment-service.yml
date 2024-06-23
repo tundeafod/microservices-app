@@ -869,7 +869,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: afod2000/recommendationservice:1.03
+          image: afod2000/recommendationservice:1.02
           ports:
             - containerPort: 8080
           readinessProbe:
