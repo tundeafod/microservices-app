@@ -276,7 +276,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: afod2000/checkoutservice:1.03
+          image: afod2000/checkoutservice:1.02
           ports:
           - containerPort: 5050
           readinessProbe:
