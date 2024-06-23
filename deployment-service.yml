@@ -361,7 +361,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/shippingservice:1.03
+        image: afod2000/shippingservice:1.02
         ports:
         - containerPort: 50051
         env:
