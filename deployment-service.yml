@@ -37,7 +37,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/currencyservice:1.02
+        image: afod2000/currencyservice:1.03
         ports:
         - name: grpc
           containerPort: 7000
