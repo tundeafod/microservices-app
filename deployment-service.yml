@@ -741,7 +741,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: afod2000/frontend:1.02
+          image: afod2000/frontend:1.03
           ports:
             - containerPort: 8080
           readinessProbe:
