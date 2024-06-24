@@ -201,7 +201,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: afod2000/productcatalogservice:1.02
+        image: afod2000/productcatalogservice:1.03
         ports:
         - containerPort: 3550
         env:
